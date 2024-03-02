@@ -187,8 +187,12 @@ class inter_prediction(nn.Module):
         return downsampled.C
 
     def decoder_side(self, quant_motion, f1, f2_coor, ys2_4_coor):
-        ys2_4_coor_ = ME.SparseTensor(torch.ones([ys2_4_coor.size(0), 1], dtype=torch.float32, device=ys2_4_coor.device), ys2_4_coor, tensor_stride=8)
-        f2_coor_ = ME.SparseTensor(torch.ones([f2_coor.size(0), 1], dtype=torch.float32, device=f2_coor.device), f2_coor, tensor_stride=4)
+        stride = f1.tensor_stride[0]
+        ys2_4_coor_ = ME.SparseTensor(
+            torch.ones([ys2_4_coor.size(0), 1], dtype=torch.float32, device=ys2_4_coor.device), ys2_4_coor,
+            tensor_stride=stride * 2)
+        f2_coor_ = ME.SparseTensor(torch.ones([f2_coor.size(0), 1], dtype=torch.float32, device=f2_coor.device),
+                                   f2_coor, tensor_stride=stride)
         reconstructed_motion1 = self.motion_decompressor1(quant_motion, ys2_4_coor_)
 
         # motion compensation
@@ -202,9 +206,9 @@ class inter_prediction(nn.Module):
         m = m_c + m_f
 
         # 3DAWI
-        f2_coor_, m = sort_by_coor_sum(f2_coor_, 4), sort_by_coor_sum(m, 4)
+        f2_coor_, m = sort_by_coor_sum(f2_coor_), sort_by_coor_sum(m)
         motion = m.F
-        xyz1, xyz2, point1 = f1.C / 4, m.C / 4, f1.F
+        xyz1, xyz2, point1 = f1.C / stride, m.C / stride, f1.F
         xyz1, xyz2, point1 = xyz1[:, 1:].unsqueeze(0), xyz2[:, 1:].unsqueeze(0), point1.unsqueeze(0)
         B, N, C = 1, f2_coor_.size()[0], f1.size()[1]
         motion = motion.reshape(B, N, C, 3)
@@ -217,7 +221,7 @@ class inter_prediction(nn.Module):
         weights = 1 / dist
         weights = weights / torch.clamp(weights.sum(dim=3, keepdim=True), min=3)
         predicted_point2 = (weights * knn_point1_).sum(dim=3).squeeze(0)
-        predicted_f2 = ME.SparseTensor(predicted_point2, coordinates=f2_coor_.C, tensor_stride=4)
+        predicted_f2 = ME.SparseTensor(predicted_point2, coordinates=f2_coor_.C, tensor_stride=stride)
         return predicted_f2
 
     def forward(self, f1, f2, stride=8, training=True):
@@ -394,11 +398,12 @@ class UpsampleLayer(nn.Module):
         training = self.training
         out = self.relu(self.conv(self.relu(self.up(x))))
         out = self.block(out)
-        if residual is not None:
-            residual = ME.SparseTensor(residual.F, coordinates=residual.C,
-                                       coordinate_manager=out.coordinate_manager)
-            out = out + residual
-            out = ME.SparseTensor(out.F, coordinates=out.C, tensor_stride=4)
+        # if residual is not None:
+        #     stride = out.tensor_stride[0]
+        #     residual = ME.SparseTensor(residual.F, coordinates=residual.C,
+        #                                coordinate_manager=out.coordinate_manager)
+        #     out = out + residual
+        #     out = ME.SparseTensor(out.F, coordinates=out.C, tensor_stride=stride)
         out_cls = self.conv_cls(out)
 
         if adaptive:
@@ -423,10 +428,11 @@ class UpsampleLayer(nn.Module):
         out = self.relu(self.conv(self.relu(self.up(x))))
         out = self.block(out)
         if residual is not None:
+            stride = out.tensor_stride[0]
             residual = ME.SparseTensor(residual.F, coordinates=residual.C,
                                        coordinate_manager=out.coordinate_manager)
             out = out + residual
-            out = ME.SparseTensor(out.F, coordinates=out.C, tensor_stride=4)
+            out = ME.SparseTensor(out.F, coordinates=out.C, tensor_stride=stride)
         out_cls = self.conv_cls(out)
         target = get_target_by_sp_tensor(out, target_label)
 

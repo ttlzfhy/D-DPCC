@@ -13,24 +13,26 @@ def sort_by_coor_sum(f, stride=None):
         stride = f.tensor_stride[0]
     xyz, feature = f.C, f.F
     maximum = xyz.max() + 1
+    xyz, maximum = xyz.long(), maximum.long()
     coor_sum = xyz[:, 0] * maximum * maximum * maximum \
                + xyz[:, 1] * maximum * maximum \
                + xyz[:, 2] * maximum \
                + xyz[:, 3]
     _, idx = coor_sum.sort()
-    xyz_, feature_ = xyz[idx], feature[idx]
+    xyz_, feature_ = xyz[idx].to(torch.float32), feature[idx]
     f_ = ME.SparseTensor(feature_, coordinates=xyz_, tensor_stride=stride, device=f.device)
     return f_
 
 
 def coordinate_sort_by_coor_sum(xyz):
     maximum = xyz.max() + 1
+    xyz, maximum = xyz.long(), maximum.long()
     coor_sum = xyz[:, 0] * maximum * maximum * maximum \
                + xyz[:, 1] * maximum * maximum \
                + xyz[:, 2] * maximum \
                + xyz[:, 3]
     _, idx = coor_sum.sort()
-    xyz_ = xyz[idx]
+    xyz_ = xyz[idx].to(torch.float32)
     return xyz_
 
 

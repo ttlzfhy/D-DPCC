@@ -137,7 +137,7 @@ if __name__ == '__main__':
     else:
         best_loss_test = 99999999
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=15, gamma=0.7)
-    for i in range(start_epoch):
+    for i in range(start_epoch % 15):  # % scheduler step_size
         scheduler.step()
 
     '''training'''

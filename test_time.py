@@ -159,6 +159,7 @@ def decode(f1, bitstream_filename, gpcc_bitstream_filename):
     f2_C = f2.decomposed_coordinates[0].detach().cpu().numpy()
     return recon_f2_C, f2_C, recon_f2
 
+
 if __name__ == '__main__':
     args = parse_args()
     torch.cuda.set_device(int(args.gpu))

@@ -29,15 +29,16 @@ from pathlib import Path
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = BASE_DIR
 sys.path.append(os.path.join(ROOT_DIR, 'models'))
-sys.path.append(os.path.join(ROOT_DIR, '../PCGCv2'))
+sys.path.append(os.path.join(ROOT_DIR, './PCGCv2'))
 
-from models.model_utils import *
+from models.model_utils import index_points
 from dataset_owlii import *
 # from models.entropy_coding import *
 from GPCC.gpcc_wrapper import *
-from PCGCv2.eval import test_one_frame  # The folder "PCGCv2" need to be copied and in both the parent and current directory.
+from PCGCv2.eval import test_one_frame
 import pandas as pd
-import collections
+import collections, math
+from pytorch3d.ops import knn_points
 
 
 def log_string(string):
@@ -47,11 +48,11 @@ def log_string(string):
 
 def PSNR(pc1, pc2, n1):
     pc1, pc2 = pc1.to(torch.float32), pc2.to(torch.float32)
-    dist1, knn1, _ = knn_points(pc1, pc2, K=4)
-    dist2, knn2, _ = knn_points(pc2, pc1, K=4)
+    dist1, knn1, _ = knn_points(pc1, pc2, K=4)  # neighbors of pc1 from pc2
+    dist2, knn2, _ = knn_points(pc2, pc1, K=4)  # neighbors of pc2 from pc1
     mask1 = (dist1 == dist1[:, :, :1])
     mask2 = (dist2 == dist2[:, :, :1])
-    dist = max(dist1[:, :, 0].mean(), dist2[:, :, 0].mean())
+    dist = max(dist1[:, :, 0].mean(), dist2[:, :, 0].mean())  # dists from knn_points are squared dists
     cd = max(dist1[:, :, 0].sqrt().mean(), dist2[:, :, 0].sqrt().mean())
     d1_psnr = 10*math.log(3*1023*1023/dist)/math.log(10)
     knn1_ = knn1.reshape(-1)
@@ -110,7 +111,7 @@ if __name__ == '__main__':
 
     LOSSLESS_MODEL = importlib.import_module(args.lossless_model)
     lossless_model = LOSSLESS_MODEL.get_model()
-    lossless_checkpoint = torch.load('./lossless_coder.pth')
+    lossless_checkpoint = torch.load('./ddpcc_ckpts/lossless_coder.pth')
     old_paras = lossless_model.state_dict()
     new_state_dict = collections.OrderedDict()
     for k, v in lossless_checkpoint['model_state_dict'].items():
@@ -212,7 +213,7 @@ if __name__ == '__main__':
                     pc_recon = recon_f2.C[:, 1:]
                     pcd = open3d.geometry.PointCloud()
                     pcd.points = open3d.utility.Vector3dVector(pc_ori.detach().cpu().numpy())
-                    pcd.estimate_normals(search_param=open3d.geometry.KDTreeSearchParamKNN(knn=5))
+                    pcd.estimate_normals(search_param=open3d.geometry.KDTreeSearchParamKNN(knn=20))  # todo: NOTICE knn value!!! Here is the same as in PCGCv2
                     n1 = torch.tensor(np.asarray(pcd.normals)).cuda()
                     pc_ori, pc_recon, n1 = pc_ori.unsqueeze(0), pc_recon.unsqueeze(0), n1.unsqueeze(0)
                     

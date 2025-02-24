@@ -14,15 +14,15 @@ python trainer.py --batch_size=4 --gpu=7 --lamb=10 --exp_name=I10 --dataset_dir=
 ```shell
 python trainer_lossless.py --dataset_dir='/home/zhaoxudong/dataset_npy'
 ```
-In fact, the pretrained model is ```lossless_coder.pth```. You probably needn't to retrain this model.
+In fact, ```lossless_coder.pth``` is a pre-trained model that can be directly used in testing. You probably won't need to retrain it from scratch.
 
 ### Test
-Estimate the bitrate with factorized entropy model, without practical and separate encoding and decoding process:
+Estimate the bitrate by the differential entropy of the factorized entropy model without practical and separate encoding and decoding processes:
 ```shell
 python test_owlii.py --log_name='aaa' --gpu=1 --frame_count=32 --results_dir='results' --tmp_dir='tmp' --dataset_dir='/home/zhaoxudong/Owlii_10bit'
 ```
-With separate encoding and decoding process, which generates real bitstream, 
-and calculate encoding and decoding time.
+
+Involve actual arithmetic coding that generates real bitstreams, with separate encoding and decoding processes and calculation of encoding and decoding time:
 ```shell
 python test_time.py --log_name='aaa' --gpu=1 --frame_count=32 --results_dir='results' --tmp_dir='tmp' --dataset_dir='/home/zhaoxudong/Owlii_10bit'
 ```

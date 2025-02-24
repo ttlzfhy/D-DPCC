@@ -12,7 +12,7 @@ def parse_args():
     parser.add_argument('--gpu', type=str, default='2', help='specify gpu device [default: 0]')
     parser.add_argument('--channels', default=8, type=int)
     parser.add_argument('--ckpt_dir', type=str,
-                        default='./ddpcc_ckpts')
+                        default='./ddpcc_ckpts_mpeg')
     parser.add_argument('--pcgcv2_ckpt_dir', type=str,
                         default='./pcgcv2_ckpts')
     parser.add_argument('--frame_count', type=int, default=100, help='number of frames to be coded')
@@ -135,22 +135,22 @@ if __name__ == '__main__':
     8: exercise
     13: model
     '''
-    # ckpts = {
-    #     'r1_0.025bpp.pth': 'r1.pth',
-    #     'r2_0.05bpp.pth': 'r2.pth',
-    #     'r3_0.10bpp.pth': 'r3.pth',
-    #     'r4_0.15bpp.pth': 'r4.pth',
-    #     'r5_0.25bpp.pth': 'r5.pth',
-    #     'r6_0.3bpp.pth': 'r6.pth',
-    #     'r7_0.4bpp.pth': 'r7.pth',
-    # }
     ckpts = {
-        'r3_0.10bpp.pth': 'r1.pth',
-        'r4_0.15bpp.pth': 'r2.pth',
-        'r5_0.25bpp.pth': 'r3.pth',
-        'r6_0.3bpp.pth': 'r4.pth',
-        'r7_0.4bpp.pth': 'r5.pth'
-    }
+        'r1_0.025bpp.pth': 'r1.pth',
+        'r2_0.05bpp.pth': 'r2.pth',
+        'r3_0.10bpp.pth': 'r3.pth',
+        'r4_0.15bpp.pth': 'r4.pth',
+        'r5_0.25bpp.pth': 'r5.pth',
+        'r6_0.3bpp.pth': 'r6.pth',
+        'r7_0.4bpp.pth': 'r7.pth',
+    }  # ddpcc_ckpts_mpeg
+    # ckpts = {
+    #     'r3_0.10bpp.pth': 'r1.pth',
+    #     'r4_0.15bpp.pth': 'r2.pth',
+    #     'r5_0.25bpp.pth': 'r3.pth',
+    #     'r6_0.3bpp.pth': 'r4.pth',
+    #     'r7_0.4bpp.pth': 'r5.pth'
+    # }  # ddpcc_ckpts
     with torch.no_grad():
         for pcgcv2_ckpt in ckpts:
             exp_name = str(ckpts[pcgcv2_ckpt]).split('.')

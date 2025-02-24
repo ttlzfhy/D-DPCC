@@ -1,5 +1,5 @@
 # D-DPCC
-This is the code of D-DPCC: Deep Dynamic Point Cloud Compression via 3D Motion Prediction.
+This is the code of **D-DPCC: Deep Dynamic Point Cloud Compression via 3D Motion Prediction**.
 
 Link of the paper: https://www.ijcai.org/proceedings/2022/0126.pdf
 
@@ -27,7 +27,7 @@ Involve actual arithmetic coding that generates real bitstreams, with separate e
 python test_time.py --log_name='aaa' --gpu=1 --frame_count=32 --results_dir='results' --tmp_dir='tmp' --dataset_dir='/home/zhaoxudong/Owlii_10bit'
 ```
 
-## Probable problems in testing
+### Probable problems in testing
 - If ```./GPCC/tmc3: Permission denied```:
 ```shell
 chmod 777 ./GPCC/tmc3
@@ -43,7 +43,7 @@ chmod 777 ./GPCC/pc_error
 
 
 # Checkpoints and results
-Shown in the folder ```ddpcc_ckpts_mpeg``` and ```ddpcc_ckpts``. 
+Shown in the folder ```ddpcc_ckpts_mpeg``` and ```ddpcc_ckpts```. 
 
 ```ddpcc_ckpts_mpeg``` is trained on 10-bit 8IVFBv2 dataset and can be tested on Owlii dataset. Detailed information is shown in the MPEG proposal: M60267 “[AI-3DGC] D-DPCC Test Results on 10 bit Owlii”, 2022/7. Results on 10-bit Owlii dataset are shown in the folder ```results_csv```. 
 

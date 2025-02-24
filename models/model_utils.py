@@ -242,6 +242,7 @@ class inter_prediction(nn.Module):
 
         # motion compression
         compressed_motion2 = self.motion_compressor(e)
+        # print(torch.round(compressed_motion2.F).abs().sum().item())
         quant_compressed_motion = ME.SparseTensor(quant(compressed_motion2.F, training=self.training),
                                                   coordinate_map_key=compressed_motion2.coordinate_map_key,
                                                   coordinate_manager=compressed_motion2.coordinate_manager)

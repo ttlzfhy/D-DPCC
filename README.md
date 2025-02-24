@@ -5,6 +5,52 @@ Link of the paper: https://www.ijcai.org/proceedings/2022/0126.pdf
 
 
 
+# Train and Test
+### Train D-DPCC models
+```shell
+python trainer.py --batch_size=4 --gpu=7 --lamb=10 --exp_name=I10 --dataset_dir='/home/zhaoxudong/dataset_npy'
+```
+### Train lossless model for the compression of 2x downsampled coordinates
+```shell
+python trainer_lossless.py --dataset_dir='/home/zhaoxudong/dataset_npy'
+```
+In fact, the pretrained model is ```lossless_coder.pth```. You probably needn't to retrain this model.
+
+### Test
+Estimate the bitrate with factorized entropy model, without practical and separate encoding and decoding process:
+```shell
+python test_owlii.py --log_name='aaa' --gpu=1 --frame_count=32 --results_dir='results' --tmp_dir='tmp' --dataset_dir='/home/zhaoxudong/Owlii_10bit'
+```
+With separate encoding and decoding process, which generates real bitstream, 
+and calculate encoding and decoding time.
+```shell
+python test_time.py --log_name='aaa' --gpu=1 --frame_count=32 --results_dir='results' --tmp_dir='tmp' --dataset_dir='/home/zhaoxudong/Owlii_10bit'
+```
+
+## Probable problems in testing
+- If ```./GPCC/tmc3: Permission denied```:
+```shell
+chmod 777 ./GPCC/tmc3
+```
+
+- If ```./GPCC/pc_error: Permission denied```:
+```shell
+chmod 777 ./GPCC/pc_error
+```
+
+- The folder ```PCGCv2``` need to be copied and in both the parent and current directory.
+
+
+
+# Checkpoints and results
+Shown in the folder ```ddpcc_ckpts_mpeg``` and ```ddpcc_ckpts``. 
+
+```ddpcc_ckpts_mpeg``` is trained on 10-bit 8IVFBv2 dataset and can be tested on Owlii dataset. Detailed information is shown in the MPEG proposal: M60267 “[AI-3DGC] D-DPCC Test Results on 10 bit Owlii”, 2022/7. Results on 10-bit Owlii dataset are shown in the folder ```results_csv```. 
+
+```ddpcc_ckpts``` is trained on Owlii and tested on 8IVFBv2. Detailed information is shown in the paper.
+
+
+
 # Reference
 If you want to cite our work, please use the following reference:
 
@@ -57,47 +103,3 @@ setuptools~=58.0.4
 scipy~=1.7.3
 
 scikit-learn~=1.0.2
-
-
-
-# Train and Test
-## Train D-DPCC models:
-```shell
-python trainer.py --batch_size=4 --gpu=7 --lamb=10 --exp_name=I10 --dataset_dir='/home/zhaoxudong/dataset_npy'
-```
-## Train lossless model for the compression of 2x downsampled coordinates:
-```shell
-python trainer_lossless.py --dataset_dir='/home/zhaoxudong/dataset_npy'
-```
-In fact, the pretrained model is ```lossless_coder.pth```. You probably needn't to retrain this model.
-
-## Test:
-Estimate the bitrate with factorized entropy model, without practical and separate encoding and decoding process:
-```shell
-python test_owlii.py --log_name='aaa' --gpu=1 --frame_count=32 --results_dir='results' --tmp_dir='tmp' --dataset_dir='/home/zhaoxudong/Owlii_10bit'
-```
-With separate encoding and decoding process, which generates real bitstream, 
-and calculate encoding and decoding time.
-```shell
-python test_time.py --log_name='aaa' --gpu=1 --frame_count=32 --results_dir='results' --tmp_dir='tmp' --dataset_dir='/home/zhaoxudong/Owlii_10bit'
-```
-
-## Probable problems in testing:
-- If ```./GPCC/tmc3: Permission denied```:
-```shell
-chmod 777 ./GPCC/tmc3
-```
-
-- If ```./GPCC/pc_error: Permission denied```:
-```shell
-chmod 777 ./GPCC/pc_error
-```
-
-- The folder ```PCGCv2``` need to be copied and in both the parent and current directory.
-
-
-
-# Results
-Shown in the folder ```results_csv```. 
-
-See details in the MPEG proposal: M60267 “[AI-3DGC] D-DPCC Test Results on 10 bit Owlii”, 2022/7. 

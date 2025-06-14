@@ -24,7 +24,7 @@ python test_owlii.py --log_name='aaa' --gpu=1 --frame_count=32 --results_dir='re
 
 Involve actual arithmetic coding that generates real bitstreams, with separate encoding and decoding processes and calculation of encoding and decoding time:
 ```shell
-python test_time.py --log_name='aaa' --gpu=1 --frame_count=32 --results_dir='results' --tmp_dir='tmp' --dataset_dir='/home/zhaoxudong/Owlii_10bit'
+python test_time.py --log_name='aaa' --gpu=1 --frame_count=32 --dataset_dir='/home/zhaoxudong/Owlii_10bit'
 ```
 
 ### Probable problems in testing

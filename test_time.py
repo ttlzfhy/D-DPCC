@@ -44,7 +44,8 @@ def write_file(x_ori, x_dec, showdir, idx):
         points_ori = x_ori.C[:, 1:].detach().cpu().numpy()
     else:
         points_ori = x_ori
-    ori_dir = os.path.join(showdir, 'f2'+str(idx)+'.ply')
+    # ori_dir = os.path.join(showdir, 'f2'+str(idx)+'.ply')
+    ori_dir = os.path.join(showdir, 'f2.ply')
     write_ply_open3d_normal(ori_dir, points_ori)
     #
     if isinstance(x_dec, ME.SparseTensor):
@@ -248,12 +249,12 @@ if __name__ == '__main__':
     '''
     ckpts = {
         'r1.pth': 'r3_0.10bpp.pth',
-        # 'r2.pth': 'r3_0.10bpp.pth',
-        # 'r3.pth': 'r4_0.15bpp.pth',
-        # 'r4.pth': 'r4_0.15bpp.pth',
-        # 'r5.pth': 'r5_0.25bpp.pth',
-        # 'r6.pth': 'r6_0.3bpp.pth',
-        # 'r7.pth': 'r7_0.4bpp.pth',
+        'r2.pth': 'r3_0.10bpp.pth',
+        'r3.pth': 'r4_0.15bpp.pth',
+        'r4.pth': 'r4_0.15bpp.pth',
+        'r5.pth': 'r5_0.25bpp.pth',
+        'r6.pth': 'r6_0.3bpp.pth',
+        'r7.pth': 'r7_0.4bpp.pth',
     } 
     
     with torch.no_grad():
@@ -286,7 +287,8 @@ if __name__ == '__main__':
             ## dataset settings
             filedir_list = sorted(glob.glob(os.path.join(args.dataset_dir, '**', '*.*'), recursive=True))
             filedir_list = [f for f in filedir_list if f.endswith('npy') or f.endswith('ply')]
-            filedir_list = filedir_list[start_frame: min(start_frame + args.frame_count, len(filedir_list))]
+            args.frame_count = min(args.frame_count, len(filedir_list))
+            filedir_list = filedir_list[start_frame: args.frame_count]
 
             log_string('start testing sequence ' + seqname + ', rate point ' + ddpcc_ckpt)
             log_string('f bpp     d1PSNR  d2PSNR')

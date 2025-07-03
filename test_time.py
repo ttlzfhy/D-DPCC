@@ -112,19 +112,19 @@ def encode(f1, f2, bitstream_filename, gpcc_bitstream_filename):
     write_ply_data(os.path.join(showdir, 'ys2_4.ply'), ys2_4_C / 8)
     gpcc_encode(os.path.join(showdir, 'ys2_4.ply'), gpcc_bitstream_filename)
     file = open(bitstream_filename, 'wb')
-    file.write(np.array(min_v_motion, dtype=np.int8).tobytes())
-    file.write(np.array(max_v_motion, dtype=np.int8).tobytes())
-    file.write(np.array(min_v_res, dtype=np.int8).tobytes())
-    file.write(np.array(max_v_res, dtype=np.int8).tobytes())
-    file.write(np.array(min_v_res2, dtype=np.int8).tobytes())
-    file.write(np.array(max_v_res2, dtype=np.int8).tobytes())
-    file.write(np.array(quant_y.shape[1], dtype=np.uint16).tobytes())
-    file.write(np.array(quant_motion.shape[0], dtype=np.uint16).tobytes())
+    file.write(np.array(min_v_motion, dtype=np.int16).tobytes())
+    file.write(np.array(max_v_motion, dtype=np.int16).tobytes())
+    file.write(np.array(min_v_res, dtype=np.int16).tobytes())
+    file.write(np.array(max_v_res, dtype=np.int16).tobytes())
+    file.write(np.array(min_v_res2, dtype=np.int16).tobytes())
+    file.write(np.array(max_v_res2, dtype=np.int16).tobytes())
+    file.write(np.array(quant_y.shape[1], dtype=np.uint32).tobytes())
+    file.write(np.array(quant_motion.shape[0], dtype=np.uint32).tobytes())
     file.write(np.array(ys2[0].shape[0], dtype=np.uint32).tobytes())
     file.write(np.array(ys2[1].shape[0], dtype=np.uint32).tobytes())
-    file.write(np.array(len(motion_bitstream), dtype=np.uint16).tobytes())
-    file.write(np.array(len(ys2_2_feature_bitstream), dtype=np.uint16).tobytes())
-    file.write(np.array(len(ys2_2_bitstream), dtype=np.uint16).tobytes())
+    file.write(np.array(len(motion_bitstream), dtype=np.uint32).tobytes())
+    file.write(np.array(len(ys2_2_feature_bitstream), dtype=np.uint32).tobytes())
+    file.write(np.array(len(ys2_2_bitstream), dtype=np.uint32).tobytes())
     file.write(motion_bitstream)
     file.write(ys2_2_feature_bitstream)
     file.write(ys2_2_bitstream)
@@ -143,13 +143,13 @@ def decode(f1, bitstream_filename, gpcc_bitstream_filename):
     ys1 = [f1, 0, 0]
     file = open(bitstream_filename, 'rb')
     min_v_motion_, max_v_motion_, min_v_res_, max_v_res_, min_v_res2_, max_v_res2_ = np.frombuffer(
-        file.read(6), dtype=np.int8)
+        file.read(12), dtype=np.int16)
     quant_y_length, quant_motion_length = np.frombuffer(
-        file.read(4), dtype=np.uint16)
+        file.read(8), dtype=np.uint32)
     num_points_0, num_points_1 = np.frombuffer(
         file.read(8), dtype=np.uint32)
     motion_bitstream_length, ys2_2_feature_bitstream_length, ys2_2_bitstream_length = np.frombuffer(
-        file.read(6), dtype=np.uint16)
+        file.read(12), dtype=np.uint32)
     motion_bitstream_ = file.read(motion_bitstream_length)
     ys2_2_feature_bitstream_ = file.read(ys2_2_feature_bitstream_length)
     ys2_2_bitstream_ = file.read(ys2_2_bitstream_length)
@@ -417,6 +417,8 @@ if __name__ == '__main__':
                 
                 # TODO: optional
                 show_motion(enc_results['motion_vector'], showdir, i)
+                
+                torch.cuda.empty_cache()
                 
             # mean results of one rate
             mean_results = {'rate': rate, 

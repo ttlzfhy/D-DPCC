@@ -1,7 +1,7 @@
 import torch
 import MinkowskiEngine as ME
 
-from data_utils import isin, istopk
+from data_utils_pcgcv2 import isin, istopk
 criterion = torch.nn.BCEWithLogitsLoss()
 
 def get_bce(data, groud_truth):

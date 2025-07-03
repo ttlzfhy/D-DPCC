@@ -2,7 +2,7 @@ import open3d as o3d
 import numpy as np
 import random
 import os, time
-from data_utils import write_ply_ascii_geo, write_h5_geo
+from data_utils_pcgcv2 import write_ply_ascii_geo, write_h5_geo
 
 def sample_points(mesh_filedir, n_points=4e5, resolution=255):
     # sample points uniformly.

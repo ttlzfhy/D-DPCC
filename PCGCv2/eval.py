@@ -4,8 +4,8 @@ import os
 from pcc_model import PCCModel
 from coder import Coder
 import time
-from data_utils import load_sparse_tensor, sort_spare_tensor, scale_sparse_tensor
-from data_utils import write_ply_ascii_geo, read_ply_ascii_geo, write_ply_open3d_normal
+from data_utils_pcgcv2 import load_sparse_tensor, sort_spare_tensor, scale_sparse_tensor
+from data_utils_pcgcv2 import write_ply_ascii_geo, read_ply_ascii_geo, write_ply_open3d_normal
 from pc_error import pc_error
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 

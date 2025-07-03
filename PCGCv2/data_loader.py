@@ -7,7 +7,7 @@ import torch
 import torch.utils.data
 from torch.utils.data.sampler import Sampler
 import MinkowskiEngine as ME
-from data_utils import read_h5_geo, read_ply_ascii_geo
+from data_utils_pcgcv2 import read_h5_geo, read_ply_ascii_geo
 
 class InfSampler(Sampler):
     """Samples elements randomly, without replacement.

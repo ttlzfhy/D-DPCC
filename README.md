@@ -19,12 +19,17 @@ In fact, ```lossless_coder.pth``` is a pre-trained model that can be directly us
 ### Test
 Estimate the bitrate by the differential entropy of the factorized entropy model without practical and separate encoding and decoding processes:
 ```shell
-python test_owlii.py --log_name='aaa' --gpu=1 --frame_count=32 --results_dir='results' --tmp_dir='tmp' --dataset_dir='/home/zhaoxudong/Owlii_10bit'
+python test_owlii.py --log_name='aaa' --gpu=1 --frame_count=32 \
+--results_dir='results' --tmp_dir='tmp' \
+--ckpt_dir=./ddpcc_ckpts_mpeg \
+--dataset_dir='/home/zhaoxudong/Owlii_10bit'
 ```
 
 Involve actual arithmetic coding that generates real bitstreams, with separate encoding and decoding processes and calculation of encoding and decoding time:
 ```shell
-python test_time.py --log_name='aaa' --gpu=1 --frame_count=32 --dataset_dir='/home/zhaoxudong/Owlii_10bit'
+python test_time.py --log_name='aaa' --gpu=1 --frame_count=32 \
+--ckpt_dir=./ddpcc_ckpts_mpeg \
+--dataset_dir='/home/zhaoxudong/Owlii_10bit/basketball'
 ```
 
 ### Probable problems in testing
